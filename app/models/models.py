@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, UniqueConstraint, CheckConstraint
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, UniqueConstraint, CheckConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -25,7 +25,9 @@ class Event(Base):
     description = Column(String, nullable=True)
     start_time = Column(String, nullable=False)
     capacity = Column(Integer, nullable=False)
-    category = Column(String, default="GENERAL", index=True)
+    # AI Service (Grup 5) tarafindan belirlenen kategori; AI ulasilamazsa "OTHER"
+    category = Column(String, default="OTHER", index=True)
+    category_confidence = Column(Float, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     __table_args__ = (
@@ -34,6 +36,10 @@ class Event(Base):
 
     club = relationship("Club", back_populates="events")
     registrations = relationship("EventRegistration", back_populates="event", cascade="all, delete-orphan")
+
+    @property
+    def club_name(self) -> str | None:
+        return self.club.name if self.club else None
 
 
 class ClubMembership(Base):
