@@ -1,0 +1,9 @@
+﻿services:
+  club-event-service:
+    build: .
+    container_name: campushub-club-event-service
+    ports:
+      - "8003:8003"
+    env_file:
+      - .env.example
+    restart: unless-stopped
